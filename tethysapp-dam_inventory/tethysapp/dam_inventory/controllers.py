@@ -1,13 +1,16 @@
 from django.contrib import messages
 from django.shortcuts import render, reverse, redirect
+from django.utils.html import format_html
 from tethys_sdk.permissions import login_required
 from tethys_sdk.gizmos import (Button, MapView, TextInput, DatePicker,
                                SelectInput, DataTableView, MVDraw, MVView,
                                MVLayer)
 from tethys_sdk.permissions import permission_required, has_permission
 from tethys_sdk.workspaces import app_workspace
-from .model import add_new_dam, get_all_dams, Dam, assign_hydrograph_to_dam
+from .model import add_new_dam, get_all_dams, Dam, assign_hydrograph_to_dam, get_hydrograph
 from .app import DamInventory as app
+from .helpers import create_hydrograph
+
 
 
 @login_required()
@@ -282,19 +285,28 @@ def list_dams(request):
     table_rows = []
 
     for dam in dams:
+        hydrograph_id = get_hydrograph(dam.id)
+        if hydrograph_id:
+            url = reverse('dam_inventory:hydrograph', kwargs={'hydrograph_id': hydrograph_id})
+            dam_hydrograph = format_html('<a class="btn btn-primary" href="{}">Hydrograph Plot</a>'.format(url))
+        else:
+            dam_hydrograph = format_html('<a class="btn btn-primary disabled" title="No hydrograph assigned" '
+                                         'style="pointer-events: auto;">Hydrograph Plot</a>')
+
         table_rows.append(
             (
                 dam.name, dam.owner,
-                dam.river, dam.date_built
+                dam.river, dam.date_built,
+                dam_hydrograph
             )
         )
 
     dams_table = DataTableView(
-        column_names=('Name', 'Owner', 'River', 'Date Built'),
+        column_names=('Name', 'Owner', 'River', 'Date Built', 'Hydrograph'),
         rows=table_rows,
         searching=False,
         orderClasses=False,
-        lengthMenu=[ [10, 25, 50, -1], [10, 25, 50, "All"] ],
+        lengthMenu=[[10, 25, 50, -1], [10, 25, 50, "All"]],
     )
 
     context = {
@@ -392,3 +404,17 @@ def assign_hydrograph(request):
     session.close()
 
     return render(request, 'dam_inventory/assign_hydrograph.html', context)
+
+
+@login_required()
+def hydrograph(request, hydrograph_id):
+    """
+    Controller for the Hydrograph Page.
+    """
+    hydrograph_plot = create_hydrograph(hydrograph_id)
+
+    context = {
+        'hydrograph_plot': hydrograph_plot,
+        'can_add_dams': has_permission(request, 'add_dams')
+    }
+    return render(request, 'dam_inventory/hydrograph.html', context)

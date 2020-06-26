@@ -157,6 +157,24 @@ def assign_hydrograph_to_dam(dam_id, hydrograph_file):
 
     return True
 
+
+def get_hydrograph(dam_id):
+    """
+    Get hydrograph id from dam id.
+    """
+    Session = app.get_persistent_store_database('primary_db', as_sessionmaker=True)
+    session = Session()
+
+    #Query if hydrograph exists for dam
+    hydrograph = session.query(Hydrograph).filter_by(dam_id=dam_id).first()
+    session.close()
+
+    if hydrograph:
+        return hydrograph.id
+    else:
+        return None
+
+
 def init_primary_db(engine, first_time):
     """
     Initializer for the primary database.
