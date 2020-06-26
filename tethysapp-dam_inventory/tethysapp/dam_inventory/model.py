@@ -1,7 +1,7 @@
 import json
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, Float, String
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import Column, Integer, Float, String, ForeignKey
+from sqlalchemy.orm import sessionmaker, relationship
 
 from .app import DamInventory as app
 
@@ -23,6 +23,40 @@ class Dam(Base):
     owner = Column(String)
     river = Column(String)
     date_built = Column(String)
+
+    # Relationships
+    hydrograph = relationship('Hydrograph', back_populates='dam', uselist=False)
+
+
+class Hydrograph(Base):
+    """
+    SQLAlchemy Hydrograph DB Model
+    """
+    __tablename__ = 'hydrographs'
+
+    # Columns
+    id = Column(Integer, primary_key=True)
+    dam_id = Column(ForeignKey('dams.id'))
+
+    # Relationships
+    dam = relationship('Dam', back_populates='hydrograph')
+    points = relationship('HydrographPoint', back_populates='hydrograph')
+
+
+class HydrographPoint(Base):
+    """
+    SQLAlchemy Hydrograph Point DB Model
+    """
+    __tablename__ = 'hydrograph_points'
+
+    # Columns
+    id = Column(Integer, primary_key=True)
+    hydrograph_id = Column(ForeignKey('hydrographs.id'))
+    time = Column(Integer)  #: hours
+    flow = Column(Float)  #: cfs
+
+    # Relationships
+    hydrograph = relationship('Hydrograph', back_populates='points')
 
 
 def add_new_dam(location, name, owner, river, date_built):
