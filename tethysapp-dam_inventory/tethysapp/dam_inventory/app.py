@@ -9,7 +9,7 @@ class DamInventory(TethysAppBase):
 
     name = 'Dam Inventory'
     index = 'dam_inventory:home'
-    icon = 'dam_inventory/images/Earthbending_emblem.png'
+    icon = 'dam_inventory/images/Earthbending_emblem.pn'
     package = 'dam_inventory'
     root_url = 'dam-inventory'
     color = '#fc610d'
