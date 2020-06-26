@@ -72,7 +72,8 @@ def home(request):
         source='GeoJSON',
         options=dams_feature_collection,
         legend_title='Dams',
-        layer_options={'style': style}
+        layer_options={'style': style},
+        feature_selection=True
     )
 
     # Define view centered on dam locations

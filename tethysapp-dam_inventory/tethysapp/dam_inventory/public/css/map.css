@@ -7,3 +7,7 @@
 #map_view_outer_container {
     height: 100%;
 }
+
+.popover-content {
+    width: 240px;
+}
