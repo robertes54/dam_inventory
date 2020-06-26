@@ -5,7 +5,8 @@ from tethys_sdk.gizmos import (Button, MapView, TextInput, DatePicker,
                                SelectInput, DataTableView, MVDraw, MVView,
                                MVLayer)
 from tethys_sdk.workspaces import app_workspace
-from .model import add_new_dam, get_all_dams
+from .model import add_new_dam, get_all_dams, Dam
+from .app import DamInventory as app
 
 
 @login_required()
@@ -163,7 +164,20 @@ def add_dam(request):
             location_error = 'Location is required.'
 
         if not has_errors:
-            add_new_dam(location=location, name=name, owner=owner, river=river, date_built=date_built)
+            # Get value of max_dams custom setting
+            max_dams = app.get_custom_setting('max_dams')
+
+            # Query database for count of dams
+            Session = app.get_persistent_store_database('primary_db', as_sessionmaker=True)
+            session = Session()
+            num_dams = session.query(Dam).count()
+
+            # Only add the dam if custom setting doesn't exist or we have not exceed max_dams
+            if not max_dams or num_dams < max_dams:
+                add_new_dam(location=location, name=name, owner=owner, river=river, date_built=date_built)
+            else:
+                messages.warning(request, 'Unable to add dam "{0}", because the inventory is full.'.format(name))
+
             return redirect(reverse('dam_inventory:home'))
 
         messages.error(request, "Please fix errors.")
