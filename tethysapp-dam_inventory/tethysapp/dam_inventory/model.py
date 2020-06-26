@@ -105,6 +105,57 @@ def get_all_dams():
 
     return dams
 
+def assign_hydrograph_to_dam(dam_id, hydrograph_file):
+    """
+    Parse hydrograph file and add to database, assigning to appropriate dam.
+    """
+    #Parse file
+    hydro_points = []
+
+    try:
+        for line in hydrograph_file:
+            line = line.decode('utf-8')
+            sline = line.split(',')
+
+            try:
+                time = int(sline[0])
+                flow = float(sline[1])
+                hydro_points.append(HydrographPoint(time=time, flow=flow))
+            except ValueError:
+                continue
+
+        if len(hydro_points) > 0:
+            Session = app.get_persistent_store_database('primary_db', as_sessionmaker=True)
+            session = Session()
+
+            #Get dam object
+            dam = session.query(Dam).get(int(dam_id))
+
+            #Overwrite old hydrograph
+            hydrograph = dam.hydrograph
+
+            #Create new hydrograph if not assigned already
+            if not hydrograph:
+                hydrograph = Hydrograph()
+                dam.hydrograph = hydrograph
+
+            #Remove old points if any
+            for hydro_point in hydrograph.points:
+                session.delete(hydro_point)
+
+            #Assign points ot hydrograph
+            hydrograph.points = hydro_points
+
+            #Persist to database
+            session.commit()
+            session.close()
+
+    except Exception as e:
+        #Careful not to hide error. At the very least log it to the console
+        print(e)
+        return False
+
+    return True
 
 def init_primary_db(engine, first_time):
     """
