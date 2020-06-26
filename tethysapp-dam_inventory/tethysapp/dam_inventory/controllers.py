@@ -8,29 +8,34 @@ from tethys_sdk.workspaces import app_workspace
 from .model import add_new_dam, get_all_dams
 
 
-@app_workspace
 @login_required()
-def home(request, app_workspace):
+def home(request):
     """
     Controller for the app home page.
     """
     # Get list of dams and create dams MVLayer:
-    dams = get_all_dams(app_workspace.path)
+    dams = get_all_dams()
     features = []
     lat_list = []
     lng_list = []
 
     # Define GeoJSON Features
     for dam in dams:
-        dam_location = dam.pop('location')
-        lat_list.append(dam_location['coordinates'][1])
-        lng_list.append(dam_location['coordinates'][0])
+        lat_list.append(dam.latitude)
+        lng_list.append(dam.longitude)
 
         dam_feature = {
             'type': 'Feature',
             'geometry': {
-                'type': dam_location['type'],
-                'coordinates': dam_location['coordinates'],
+                'type': 'Point',
+                'coordinates': [dam.longitude, dam.latitude],
+            },
+            'properties': {
+                'id': dam.id,
+                'name': dam.name,
+                'owner': dam.owner,
+                'river': dam.river,
+                'date_built': dam.date_built
             }
         }
 
@@ -107,9 +112,8 @@ def home(request, app_workspace):
     return render(request, 'dam_inventory/home.html', context)
 
 
-@app_workspace
 @login_required()
-def add_dam(request, app_workspace):
+def add_dam(request):
     """
     Controller for the Add Dam page.
     """
@@ -159,7 +163,7 @@ def add_dam(request, app_workspace):
             location_error = 'Location is required.'
 
         if not has_errors:
-            add_new_dam(db_directory=app_workspace.path, location=location, name=name, owner=owner, river=river, date_built=date_built)
+            add_new_dam(location=location, name=name, owner=owner, river=river, date_built=date_built)
             return redirect(reverse('dam_inventory:home'))
 
         messages.error(request, "Please fix errors.")
@@ -251,20 +255,19 @@ def add_dam(request, app_workspace):
 
 
 
-@app_workspace
 @login_required()
-def list_dams(request, app_workspace):
+def list_dams(request):
     """
     Show all dams in a table view.
     """
-    dams = get_all_dams(app_workspace.path)
+    dams = get_all_dams()
     table_rows = []
 
     for dam in dams:
         table_rows.append(
             (
-                dam['name'], dam['owner'],
-                dam['river'], dam['date_built']
+                dam.name, dam.owner,
+                dam.river, dam.date_built
             )
         )
 

@@ -1,64 +1,112 @@
-import os
-import uuid
 import json
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, Integer, Float, String
+from sqlalchemy.orm import sessionmaker
+
+from .app import DamInventory as app
+
+Base = declarative_base()
 
 
-def add_new_dam(db_directory, location, name, owner, river, date_built):
+# SQLAlchemy Dam DB Model
+class Dam(Base):
+    """
+    SQLAlchemy Dam DB Model
+    """
+    __tablename__ = 'dams'
+
+    #Columns
+    id = Column(Integer, primary_key=True)
+    latitude = Column(Float)
+    longitude = Column(Float)
+    name = Column(String)
+    owner = Column(String)
+    river = Column(String)
+    date_built = Column(String)
+
+
+def add_new_dam(location, name, owner, river, date_built):
     """
     Persist new dam.
     """
     # Convert GeoJSON to Python dictionary
     location_dict = json.loads(location)
+    location_geometry = location_dict['geometries'][0]
+    longitude = location_geometry['coordinates'][0]
+    latitude = location_geometry['coordinates'][1]
 
-    # Serialize data to json
-    new_dam_id = uuid.uuid4()
-    dam_dict = {
-        'id': str(new_dam_id),
-        'location': location_dict['geometries'][0],
-        'name': name,
-        'owner': owner,
-        'river': river,
-        'date_built': date_built
-    }
+    # Create new Dam record
+    new_dam = Dam(
+        latitude=latitude,
+        longitude=longitude,
+        name=name,
+        owner=owner,
+        river=river,
+        date_built=date_built
+    )
 
-    dam_json = json.dumps(dam_dict)
+    # Get connection/session to database
+    Session = app.get_persistent_store_database('primary_db', as_sessionmaker=True)
+    session = Session()
 
-    # Write to file in {{db_directory}}/dams/{{uuid}}.json
-    # Make dams dir if it doesn't exist
-    dams_dir = os.path.join(db_directory, 'dams')
-    if not os.path.exists(dams_dir):
-        os.mkdir(dams_dir)
+    # Add the new dam record to the session
+    session.add(new_dam)
 
-    # Name of the file is its id
-    file_name = str(new_dam_id) + '.json'
-    file_path = os.path.join(dams_dir, file_name)
-
-    # Write json
-    with open(file_path, 'w') as f:
-        f.write(dam_json)
+    # Commit the session and close the connection
+    session.commit()
+    session.close()
 
 
-def get_all_dams(db_directory):
+def get_all_dams():
     """
     Get all persisted dams.
     """
-    # Write to file in {{db_directory}}/dams/{{uuid}}.json
-    # Make dams dir if it doesn't exist
-    dams_dir = os.path.join(db_directory, 'dams')
-    if not os.path.exists(dams_dir):
-        os.mkdir(dams_dir)
+    # Get connection/session to database
+    Session = app.get_persistent_store_database('primary_db', as_sessionmaker=True)
+    session = Session()
 
-    dams = []
-
-    # Open each file and convert contents to python objects
-    for dam_json in os.listdir(dams_dir):
-        # Make sure we are only looking at json files
-        if '.json' not in dam_json:
-            continue
-
-        dam_json_path = os.path.join(dams_dir, dam_json)
-        with open(dam_json_path, 'r') as f:
-            dam_dict = json.loads(f.readlines()[0])
-            dams.append(dam_dict)
+    # Query for all dam records
+    dams = session.query(Dam).all()
+    session.close()
 
     return dams
+
+
+def init_primary_db(engine, first_time):
+    """
+    Initializer for the primary database.
+    """
+    # Create all the tables
+    Base.metadata.create_all(engine)
+
+    # Add data
+    if first_time:
+        # Make session
+        Session = sessionmaker(bind=engine)
+        session = Session()
+
+        # Initialize database with two dams
+        dam1 = Dam(
+            latitude=40.406624,
+            longitude=-111.529133,
+            name="Deer Creek",
+            owner="Reclamation",
+            river="Provo River",
+            date_built="April 12, 1993"
+        )
+
+        dam2 = Dam(
+            latitude=40.598168,
+            longitude=-111.424055,
+            name="Jordanelle",
+            owner="Reclamation",
+            river="Provo River",
+            date_built="1941"
+        )
+
+        # Add the dams to the session, commit, and close
+        session.add(dam1)
+        session.add(dam2)
+        session.commit()
+        session.close()
+
