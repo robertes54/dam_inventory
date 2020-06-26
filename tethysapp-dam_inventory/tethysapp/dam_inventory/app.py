@@ -1,5 +1,6 @@
 from tethys_sdk.base import TethysAppBase, url_map_maker
 from tethys_sdk.app_settings import CustomSetting, PersistentStoreDatabaseSetting
+from tethys_sdk.permissions import Permission, PermissionGroup
 
 
 class DamInventory(TethysAppBase):
@@ -72,3 +73,21 @@ class DamInventory(TethysAppBase):
         )
 
         return ps_settings
+
+    def permissions(self):
+        """
+        Define permissions for the app.
+        """
+        add_dams = Permission(
+            name='add_dams',
+            description='Add dams to inventory'
+        )
+
+        admin = PermissionGroup(
+            name='admin',
+            permissions=(add_dams,)
+        )
+
+        permissions = (admin,)
+
+        return permissions

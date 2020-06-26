@@ -4,6 +4,7 @@ from tethys_sdk.permissions import login_required
 from tethys_sdk.gizmos import (Button, MapView, TextInput, DatePicker,
                                SelectInput, DataTableView, MVDraw, MVView,
                                MVLayer)
+from tethys_sdk.permissions import permission_required, has_permission
 from tethys_sdk.workspaces import app_workspace
 from .model import add_new_dam, get_all_dams, Dam
 from .app import DamInventory as app
@@ -108,13 +109,14 @@ def home(request):
 
     context = {
         'dam_inventory_map': dam_inventory_map,
-        'add_dam_button': add_dam_button
+        'add_dam_button': add_dam_button,
+        'can_add_dams': has_permission(request, 'add_dams')
     }
 
     return render(request, 'dam_inventory/home.html', context)
 
 
-@login_required()
+@permission_required('add_dams')
 def add_dam(request):
     """
     Controller for the Add Dam page.
@@ -264,6 +266,7 @@ def add_dam(request):
         'location_error': location_error,
         'add_button': add_button,
         'cancel_button': cancel_button,
+        'can_add_dams': has_permission(request, 'add_dams')
     }
 
     return render(request, 'dam_inventory/add_dam.html', context)
@@ -295,7 +298,8 @@ def list_dams(request):
     )
 
     context = {
-        'dams_table': dams_table
+        'dams_table': dams_table,
+        'can_add_dams': has_permission(request, 'add_dams')
     }
 
     return render(request, 'dam_inventory/list_dams.html', context)
