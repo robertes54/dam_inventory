@@ -1,36 +1,46 @@
 from django.contrib import messages
 from django.shortcuts import render, reverse, redirect
+from django.utils.html import format_html
 from tethys_sdk.permissions import login_required
 from tethys_sdk.gizmos import (Button, MapView, TextInput, DatePicker,
                                SelectInput, DataTableView, MVDraw, MVView,
                                MVLayer)
+from tethys_sdk.permissions import permission_required, has_permission
 from tethys_sdk.workspaces import app_workspace
-from .model import add_new_dam, get_all_dams
+from .model import add_new_dam, get_all_dams, Dam, assign_hydrograph_to_dam, get_hydrograph
+from .app import DamInventory as app
+from .helpers import create_hydrograph
 
 
-@app_workspace
+
 @login_required()
-def home(request, app_workspace):
+def home(request):
     """
     Controller for the app home page.
     """
     # Get list of dams and create dams MVLayer:
-    dams = get_all_dams(app_workspace.path)
+    dams = get_all_dams()
     features = []
     lat_list = []
     lng_list = []
 
     # Define GeoJSON Features
     for dam in dams:
-        dam_location = dam.pop('location')
-        lat_list.append(dam_location['coordinates'][1])
-        lng_list.append(dam_location['coordinates'][0])
+        lat_list.append(dam.latitude)
+        lng_list.append(dam.longitude)
 
         dam_feature = {
             'type': 'Feature',
             'geometry': {
-                'type': dam_location['type'],
-                'coordinates': dam_location['coordinates'],
+                'type': 'Point',
+                'coordinates': [dam.longitude, dam.latitude],
+            },
+            'properties': {
+                'id': dam.id,
+                'name': dam.name,
+                'owner': dam.owner,
+                'river': dam.river,
+                'date_built': dam.date_built
             }
         }
 
@@ -66,7 +76,8 @@ def home(request, app_workspace):
         source='GeoJSON',
         options=dams_feature_collection,
         legend_title='Dams',
-        layer_options={'style': style}
+        layer_options={'style': style},
+        feature_selection=True
     )
 
     # Define view centered on dam locations
@@ -101,15 +112,15 @@ def home(request, app_workspace):
 
     context = {
         'dam_inventory_map': dam_inventory_map,
-        'add_dam_button': add_dam_button
+        'add_dam_button': add_dam_button,
+        'can_add_dams': has_permission(request, 'add_dams')
     }
 
     return render(request, 'dam_inventory/home.html', context)
 
 
-@app_workspace
-@login_required()
-def add_dam(request, app_workspace):
+@permission_required('add_dams')
+def add_dam(request):
     """
     Controller for the Add Dam page.
     """
@@ -159,7 +170,20 @@ def add_dam(request, app_workspace):
             location_error = 'Location is required.'
 
         if not has_errors:
-            add_new_dam(db_directory=app_workspace.path, location=location, name=name, owner=owner, river=river, date_built=date_built)
+            # Get value of max_dams custom setting
+            max_dams = app.get_custom_setting('max_dams')
+
+            # Query database for count of dams
+            Session = app.get_persistent_store_database('primary_db', as_sessionmaker=True)
+            session = Session()
+            num_dams = session.query(Dam).count()
+
+            # Only add the dam if custom setting doesn't exist or we have not exceed max_dams
+            if not max_dams or num_dams < max_dams:
+                add_new_dam(location=location, name=name, owner=owner, river=river, date_built=date_built)
+            else:
+                messages.warning(request, 'Unable to add dam "{0}", because the inventory is full.'.format(name))
+
             return redirect(reverse('dam_inventory:home'))
 
         messages.error(request, "Please fix errors.")
@@ -245,39 +269,174 @@ def add_dam(request, app_workspace):
         'location_error': location_error,
         'add_button': add_button,
         'cancel_button': cancel_button,
+        'can_add_dams': has_permission(request, 'add_dams')
     }
 
     return render(request, 'dam_inventory/add_dam.html', context)
 
 
 
-@app_workspace
 @login_required()
-def list_dams(request, app_workspace):
+def list_dams(request):
     """
     Show all dams in a table view.
     """
-    dams = get_all_dams(app_workspace.path)
+    dams = get_all_dams()
     table_rows = []
 
     for dam in dams:
+        hydrograph_id = get_hydrograph(dam.id)
+        if hydrograph_id:
+            url = reverse('dam_inventory:hydrograph', kwargs={'hydrograph_id': hydrograph_id})
+            dam_hydrograph = format_html('<a class="btn btn-primary" href="{}">Hydrograph Plot</a>'.format(url))
+        else:
+            dam_hydrograph = format_html('<a class="btn btn-primary disabled" title="No hydrograph assigned" '
+                                         'style="pointer-events: auto;">Hydrograph Plot</a>')
+
         table_rows.append(
             (
-                dam['name'], dam['owner'],
-                dam['river'], dam['date_built']
+                dam.name, dam.owner,
+                dam.river, dam.date_built,
+                dam_hydrograph
             )
         )
 
     dams_table = DataTableView(
-        column_names=('Name', 'Owner', 'River', 'Date Built'),
+        column_names=('Name', 'Owner', 'River', 'Date Built', 'Hydrograph'),
         rows=table_rows,
         searching=False,
         orderClasses=False,
-        lengthMenu=[ [10, 25, 50, -1], [10, 25, 50, "All"] ],
+        lengthMenu=[[10, 25, 50, -1], [10, 25, 50, "All"]],
     )
 
     context = {
-        'dams_table': dams_table
+        'dams_table': dams_table,
+        'can_add_dams': has_permission(request, 'add_dams')
     }
 
     return render(request, 'dam_inventory/list_dams.html', context)
+
+
+
+@login_required()
+def assign_hydrograph(request):
+    """
+    Controller for the Add Hydrograph page.
+    """
+    # Get dams from database
+    Session = app.get_persistent_store_database('primary_db', as_sessionmaker=True)
+    session = Session()
+    all_dams = session.query(Dam).all()
+
+    # Defaults
+    dam_select_options = [(dam.name, dam.id) for dam in all_dams]
+    selected_dam = None
+    hydrograph_file = None
+
+    # Errors
+    dam_select_errors = ''
+    hydrograph_file_error = ''
+
+    # Case where the form has been submitted
+    if request.POST and 'add-button' in request.POST:
+        # Get Values
+        has_errors = False
+        selected_dam = request.POST.get('dam-select', None)
+
+        if not selected_dam:
+            has_errors = True
+            dam_select_errors = 'Dam is Required.'
+
+        # Get File
+        if request.FILES and 'hydrograph-file' in request.FILES:
+            # Get a list of the files
+            hydrograph_file = request.FILES.getlist('hydrograph-file')
+
+        if not hydrograph_file and len(hydrograph_file) > 0:
+            has_errors = True
+            hydrograph_file_error = 'Hydrograph File is Required.'
+
+        if not has_errors:
+            # Process file here
+            success = assign_hydrograph_to_dam(selected_dam, hydrograph_file[0])
+
+            # Provide feedback to user
+            if success:
+                messages.info(request, 'Successfully assigned hydrograph.')
+            else:
+                messages.info(request, 'Unable to assign hydrograph. Please try again.')
+            return redirect(reverse('dam_inventory:home'))
+
+        messages.error(request, "Please fix errors.")
+
+    dam_select_input = SelectInput(
+        display_text='Dam',
+        name='dam-select',
+        multiple=False,
+        options=dam_select_options,
+        initial=selected_dam,
+        error=dam_select_errors
+    )
+
+    add_button = Button(
+        display_text='Add',
+        name='add-button',
+        icon='glyphicon glyphicon-plus',
+        style='success',
+        attributes={'form': 'add-hydrograph-form'},
+        submit=True
+    )
+
+    cancel_button = Button(
+        display_text='Cancel',
+        name='cancel-button',
+        href=reverse('dam_inventory:home')
+    )
+
+    context = {
+        'dam_select_input': dam_select_input,
+        'hydrograph_file_error': hydrograph_file_error,
+        'add_button': add_button,
+        'cancel_button': cancel_button,
+        'can_add_dams': has_permission(request, 'add_dams')
+    }
+
+    session.close()
+
+    return render(request, 'dam_inventory/assign_hydrograph.html', context)
+
+
+@login_required()
+def hydrograph(request, hydrograph_id):
+    """
+    Controller for the Hydrograph Page.
+    """
+    hydrograph_plot = create_hydrograph(hydrograph_id)
+
+    context = {
+        'hydrograph_plot': hydrograph_plot,
+        'can_add_dams': has_permission(request, 'add_dams')
+    }
+    return render(request, 'dam_inventory/hydrograph.html', context)
+
+@login_required()
+def hydrograph_ajax(request, dam_id):
+    """
+    Controller for the Hydrograph Page.
+    """
+    #Get dam from database
+    Session = app.get_persistent_store_database('primary_db', as_sessionmaker=True)
+    session = Session()
+    dam = session.query(Dam).get(int(dam_id))
+
+    if dam.hydrograph:
+        hydrograph_plot = create_hydrograph(dam.hydrograph.id, height='300px')
+    else:
+        hydrograph_plot = None
+
+    context = {
+        'hydrograph_plot': hydrograph_plot,
+    }
+
+    session.close()
+    return render(request, 'dam_inventory/hydrograph_ajax.html', context)

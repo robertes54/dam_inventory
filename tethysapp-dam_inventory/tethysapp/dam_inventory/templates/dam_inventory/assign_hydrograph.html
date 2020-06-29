@@ -1,0 +1,21 @@
+{% extends "dam_inventory/base.html" %}
+{% load tethys_gizmos %}
+
+{% block app_content %}
+  <h1>Assign Hydrograph</h1>
+  <p>Select a dam and a hydrograph file to assign to that dam. The file should be a csv with two columns: time (hours) and flow (cfs).</p>
+  <form id="add-hydrograph-form" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% gizmo dam_select_input %}
+    <div class="form-group{% if hydrograph_file_error %} has-error{% endif %}">
+      <label class="control-label">Hydrograph File</label>
+      <input type="file" name="hydrograph-file">
+      {% if hydrograph_file_error %}<p class="help-block">{{ hydrograph_file_error }}</p>{% endif %}
+    </div>
+  </form>
+{% endblock %}
+
+{% block app_actions %}
+  {% gizmo cancel_button %}
+  {% gizmo add_button %}
+{% endblock %}
