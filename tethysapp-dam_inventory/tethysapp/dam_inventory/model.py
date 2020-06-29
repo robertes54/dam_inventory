@@ -191,7 +191,7 @@ def assign_hydrograph_to_dam(dam_id, hydrograph_file):
                 time = int(sline[0])
                 flow = float(sline[1])
                 hydro_points.append(HydrographPoint(time=time, flow=flow))
-            except ValueError
+            except ValueError:
                 continue
 
         if len(hydro_points) > 0:
@@ -217,7 +217,7 @@ def assign_hydrograph_to_dam(dam_id, hydrograph_file):
             hydrograph.points = hydro_points
 
             #Persist to database
-            sesseion.commit()
+            session.commit()
             session.close()
 
     except Exception as e:
