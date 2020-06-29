@@ -1,17 +1,17 @@
+import os
+from django.utils.html import format_html
 from django.contrib import messages
 from django.shortcuts import render, reverse, redirect
-from django.utils.html import format_html
 from tethys_sdk.permissions import login_required
 from tethys_sdk.gizmos import (Button, MapView, TextInput, DatePicker,
                                SelectInput, DataTableView, MVDraw, MVView,
                                MVLayer)
 from tethys_sdk.permissions import permission_required, has_permission
-from tethys_sdk.workspaces import app_workspace, user_workspace
-from .model import add_new_dam, get_all_dams, Dam, assign_hydrograph_to_dam, get_hydrograph
+from tethys_sdk.workspaces import user_workspace
+from tethys_sdk.quotas import enforce_quota
+from .model import Dam, add_new_dam, get_all_dams, assign_hydrograph_to_dam, get_hydrograph
 from .app import DamInventory as app
 from .helpers import create_hydrograph
-import os
-
 
 
 @login_required()
@@ -25,7 +25,6 @@ def home(request):
     lat_list = []
     lng_list = []
 
-    # Define GeoJSON Features
     for dam in dams:
         lat_list.append(dam.latitude)
         lng_list.append(dam.longitude)
@@ -35,6 +34,7 @@ def home(request):
             'geometry': {
                 'type': 'Point',
                 'coordinates': [dam.longitude, dam.latitude],
+
             },
             'properties': {
                 'id': dam.id,
@@ -44,7 +44,6 @@ def home(request):
                 'date_built': dam.date_built
             }
         }
-
         features.append(dam_feature)
 
     # Define GeoJSON FeatureCollection
@@ -120,7 +119,8 @@ def home(request):
     return render(request, 'dam_inventory/home.html', context)
 
 
-
+@enforce_quota('user_dam_quota')
+@permission_required('add_dams')
 def add_dam(request):
     """
     Controller for the Add Dam page.
@@ -284,7 +284,6 @@ def add_dam(request):
     return render(request, 'dam_inventory/add_dam.html', context)
 
 
-
 @login_required()
 def list_dams(request):
     """
@@ -302,16 +301,23 @@ def list_dams(request):
             dam_hydrograph = format_html('<a class="btn btn-primary disabled" title="No hydrograph assigned" '
                                          'style="pointer-events: auto;">Hydrograph Plot</a>')
 
+        if dam.user_id == request.user.id:
+            url = reverse('dam_inventory:delete_dam', kwargs={'dam_id': dam.id})
+            dam_delete = format_html('<a class="btn btn-danger" href="{}">Delete Dam</a>'.format(url))
+        else:
+            dam_delete = format_html('<a class="btn btn-danger disabled" title="You are not the creator of the dam" '
+                                     'style="pointer-events: auto;">Delete Dam</a>')
+
         table_rows.append(
             (
                 dam.name, dam.owner,
                 dam.river, dam.date_built,
-                dam_hydrograph
+                dam_hydrograph, dam_delete
             )
         )
 
     dams_table = DataTableView(
-        column_names=('Name', 'Owner', 'River', 'Date Built', 'Hydrograph'),
+        column_names=('Name', 'Owner', 'River', 'Date Built', 'Hydrograph', 'Manage'),
         rows=table_rows,
         searching=False,
         orderClasses=False,
@@ -441,12 +447,13 @@ def hydrograph(request, hydrograph_id):
     }
     return render(request, 'dam_inventory/hydrograph.html', context)
 
+
 @login_required()
 def hydrograph_ajax(request, dam_id):
     """
     Controller for the Hydrograph Page.
     """
-    #Get dam from database
+    # Get dams from database
     Session = app.get_persistent_store_database('primary_db', as_sessionmaker=True)
     session = Session()
     dam = session.query(Dam).get(int(dam_id))
@@ -462,3 +469,28 @@ def hydrograph_ajax(request, dam_id):
 
     session.close()
     return render(request, 'dam_inventory/hydrograph_ajax.html', context)
+
+
+@user_workspace
+@login_required()
+def delete_dam(request, user_workspace, dam_id):
+    """
+    Controller for the deleting a dam.
+    """
+    Session = app.get_persistent_store_database('primary_db', as_sessionmaker=True)
+    session = Session()
+
+    # Delete hydrograph file related to dam if exists
+    for file in os.listdir(user_workspace.path):
+        if file.startswith("{}_".format(int(dam_id))):
+            os.remove(os.path.join(user_workspace.path, file))
+
+    # Delete dam object
+    dam = session.query(Dam).get(int(dam_id))
+    session.delete(dam)
+    session.commit()
+    session.close()
+
+    messages.success(request, "{} Dam has been successfully deleted.".format(dam.name))
+
+    return redirect(reverse('dam_inventory:dams'))

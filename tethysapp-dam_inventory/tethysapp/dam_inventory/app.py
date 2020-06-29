@@ -56,7 +56,11 @@ class DamInventory(TethysAppBase):
                 url='dam-inventory/hydrographs/{dam_id}/ajax',
                 controller='dam_inventory.controllers.hydrograph_ajax'
             ),
-
+            UrlMap(
+                name='delete_dam',
+                url='dam-inventory/delete_dam/{dam_id}',
+                controller='dam_inventory.controllers.delete_dam'
+            ),
         )
 
         return url_maps

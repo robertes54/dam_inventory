@@ -2,13 +2,12 @@ import json
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, Float, String, ForeignKey
 from sqlalchemy.orm import sessionmaker, relationship
-
 from .app import DamInventory as app
 
 Base = declarative_base()
 
 
-# SQLAlchemy Dam DB Model
+# SQLAlchemy ORM definition for the dams table
 class Dam(Base):
     """
     SQLAlchemy Dam DB Model
@@ -78,7 +77,7 @@ def add_new_dam(location, name, owner, river, date_built, user_id):
         owner=owner,
         river=river,
         date_built=date_built,
-        user_id=user_id,
+        user_id=user_id
     )
 
     # Get connection/session to database
@@ -108,29 +107,11 @@ def get_all_dams():
     return dams
 
 
-
-def get_hydrograph(dam_id):
-    """
-    Get hydrograph id from dam id.
-    """
-    Session = app.get_persistent_store_database('primary_db', as_sessionmaker=True)
-    session = Session()
-
-    #Query if hydrograph exists for dam
-    hydrograph = session.query(Hydrograph).filter_by(dam_id=dam_id).first()
-    session.close()
-
-    if hydrograph:
-        return hydrograph.id
-    else:
-        return None
-
-
 def assign_hydrograph_to_dam(dam_id, hydrograph_file):
     """
     Parse hydrograph file and add to database, assigning to appropriate dam.
     """
-    #Parse file
+    # Parse file
     hydro_points = []
 
     try:
@@ -146,37 +127,55 @@ def assign_hydrograph_to_dam(dam_id, hydrograph_file):
                 continue
 
         if len(hydro_points) > 0:
-            Session = app.get_persistent_store_database('primary_db', as_sessionmaker = True)
+            Session = app.get_persistent_store_database('primary_db', as_sessionmaker=True)
             session = Session()
 
             # Get dam object
             dam = session.query(Dam).get(int(dam_id))
 
-            #Overwrite old hydrograph
+            # Overwrite old hydrograph
             hydrograph = dam.hydrograph
 
-            #Create new hydrograph if not assigned already
+            # Create new hydrograph if not assigned already
             if not hydrograph:
                 hydrograph = Hydrograph()
                 dam.hydrograph = hydrograph
 
-            #Remove olf points if any
+            # Remove old points if any
             for hydro_point in hydrograph.points:
                 session.delete(hydro_point)
 
-            #Assign points to hydrograph
+            # Assign points to hydrograph
             hydrograph.points = hydro_points
 
-            #Persist to database
+            # Persist to database
             session.commit()
             session.close()
 
     except Exception as e:
-        #Careful not to hide error. At the very least log it to the console
+        # Careful not to hide error. At the very least log it to the console
         print(e)
         return False
 
     return True
+
+
+def get_hydrograph(dam_id):
+    """
+    Get hydrograph id from dam id.
+    """
+    Session = app.get_persistent_store_database('primary_db', as_sessionmaker=True)
+    session = Session()
+
+    # Query if hydrograph exists for dam
+    hydrograph = session.query(Hydrograph).filter_by(dam_id=dam_id).first()
+    session.close()
+
+    if hydrograph:
+        return hydrograph.id
+    else:
+        return None
+
 
 def init_primary_db(engine, first_time):
     """
@@ -199,7 +198,7 @@ def init_primary_db(engine, first_time):
             owner="Reclamation",
             river="Provo River",
             date_built="April 12, 1993",
-            user_id=-1,
+            user_id=-1
         )
 
         dam2 = Dam(
@@ -209,7 +208,7 @@ def init_primary_db(engine, first_time):
             owner="Reclamation",
             river="Provo River",
             date_built="1941",
-            user_id=-1,
+            user_id=-1
         )
 
         # Add the dams to the session, commit, and close
