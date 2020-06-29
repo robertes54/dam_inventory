@@ -1,3 +1,13 @@
+.popover-content {
+    width: 400px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.popover {
+    max-width: none;
+}
+
 #inner-app-content {
     padding: 0;
 }
@@ -8,6 +18,4 @@
     height: 100%;
 }
 
-.popover-content {
-    width: 240px;
-}
+

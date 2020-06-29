@@ -1,8 +1,8 @@
-from plotly import graph_ogjs as go
+from plotly import graph_objs as go
 from tethys_gizmos.gizmo_options import PlotlyView
 
 from .app import DamInventory as app
-from . model import Hydrograph
+from .model import Hydrograph
 
 
 def create_hydrograph(hydrograph_id, height='520px', width='100%'):
@@ -25,7 +25,7 @@ def create_hydrograph(hydrograph_id, height='520px', width='100%'):
         x=time,
         y=flow,
         name='Hydrograph for {0}'.format(dam.name),
-        line={'color': '#fc610d', 'width': 4, 'shape': 'spline'},
+        line={'color': '#0080ff', 'width': 4, 'shape': 'spline'},
     )
     data = [hydrograph_go]
     layout = {

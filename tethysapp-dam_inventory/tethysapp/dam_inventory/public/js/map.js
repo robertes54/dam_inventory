@@ -34,6 +34,7 @@ $(function() {
                                     '<span>' + selected_feature.get('river') + '</span>' +
                                     '<h6>Date Built:</h6>' +
                                     '<span>' + selected_feature.get('date_built') + '</span>' +
+                                    '<div id="plot-content"></div>' +
                                 '</div>';
 
             // Clean up last popup and reinitialize
@@ -52,7 +53,11 @@ $(function() {
                 });
 
                 $(popup_element).popover('show');
+
+                // Load hydrograph dynamically
+                $('#plot-content').load('/apps/dam-inventory/hydrographs/' + selected_feature.get('id') + '/ajax/');
             }, 500);
+
         } else {
             // remove pop up when selecting nothing on the map
             $(popup_element).popover('destroy');

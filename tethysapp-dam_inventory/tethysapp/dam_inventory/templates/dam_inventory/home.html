@@ -1,6 +1,10 @@
 {% extends "dam_inventory/base.html" %}
 {% load tethys_gizmos staticfiles %}
 
+{% block import_gizmos %}
+  {% import_gizmo_dependency plotly_view %}
+{% endblock %}
+
 {% block app_content %}
   {% gizmo dam_inventory_map %}
   <div id="popup"></div>

@@ -418,3 +418,25 @@ def hydrograph(request, hydrograph_id):
         'can_add_dams': has_permission(request, 'add_dams')
     }
     return render(request, 'dam_inventory/hydrograph.html', context)
+
+@login_required()
+def hydrograph_ajax(request, dam_id):
+    """
+    Controller for the Hydrograph Page.
+    """
+    #Get dam from database
+    Session = app.get_persistent_store_database('primary_db', as_sessionmaker=True)
+    session = Session()
+    dam = session.query(Dam).get(int(dam_id))
+
+    if dam.hydrograph:
+        hydrograph_plot = create_hydrograph(dam.hydrograph.id, height='300px')
+    else:
+        hydrograph_plot = None
+
+    context = {
+        'hydrograph_plot': hydrograph_plot,
+    }
+
+    session.close()
+    return render(request, 'dam_inventory/hydrograph_ajax.html', context)

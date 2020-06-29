@@ -51,6 +51,11 @@ class DamInventory(TethysAppBase):
                 url='dam-inventory/hydrographs/{hydrograph_id}',
                 controller='dam_inventory.controllers.hydrograph'
             ),
+            UrlMap(
+                name='hydrograph_ajax',
+                url='dam-inventory/hydrographs/{dam_id}/ajax',
+                controller='dam_inventory.controllers.hydrograph_ajax'
+            ),
 
         )
 
