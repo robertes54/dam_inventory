@@ -213,4 +213,3 @@ def init_primary_db(engine, first_time):
         session.add(dam2)
         session.commit()
         session.close()
-
