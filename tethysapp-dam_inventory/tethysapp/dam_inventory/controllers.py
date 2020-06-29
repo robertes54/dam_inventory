@@ -120,7 +120,7 @@ def home(request):
     return render(request, 'dam_inventory/home.html', context)
 
 
-@permission_required('add_dams')
+
 def add_dam(request):
     """
     Controller for the Add Dam page.
