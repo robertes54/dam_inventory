@@ -6,10 +6,11 @@ from tethys_sdk.gizmos import (Button, MapView, TextInput, DatePicker,
                                SelectInput, DataTableView, MVDraw, MVView,
                                MVLayer)
 from tethys_sdk.permissions import permission_required, has_permission
-from tethys_sdk.workspaces import app_workspace
+from tethys_sdk.workspaces import app_workspace, user_workspace
 from .model import add_new_dam, get_all_dams, Dam, assign_hydrograph_to_dam, get_hydrograph
 from .app import DamInventory as app
 from .helpers import create_hydrograph
+import os
 
 
 
@@ -177,10 +178,18 @@ def add_dam(request):
             Session = app.get_persistent_store_database('primary_db', as_sessionmaker=True)
             session = Session()
             num_dams = session.query(Dam).count()
+            user_id = request.user.id
 
             # Only add the dam if custom setting doesn't exist or we have not exceed max_dams
             if not max_dams or num_dams < max_dams:
-                add_new_dam(location=location, name=name, owner=owner, river=river, date_built=date_built)
+                add_new_dam(
+                    location=location,
+                    name=name,
+                    owner=owner,
+                    river=river,
+                    date_built=date_built,
+                    user_id=user_id
+                )
             else:
                 messages.warning(request, 'Unable to add dam "{0}", because the inventory is full.'.format(name))
 
@@ -317,16 +326,16 @@ def list_dams(request):
     return render(request, 'dam_inventory/list_dams.html', context)
 
 
-
+@user_workspace
 @login_required()
-def assign_hydrograph(request):
+def assign_hydrograph(request, user_workspace):
     """
     Controller for the Add Hydrograph page.
     """
     # Get dams from database
     Session = app.get_persistent_store_database('primary_db', as_sessionmaker=True)
     session = Session()
-    all_dams = session.query(Dam).all()
+    all_dams = session.query(Dam).filter(Dam.user_id == request.user.id)
 
     # Defaults
     dam_select_options = [(dam.name, dam.id) for dam in all_dams]
@@ -358,7 +367,20 @@ def assign_hydrograph(request):
 
         if not has_errors:
             # Process file here
-            success = assign_hydrograph_to_dam(selected_dam, hydrograph_file[0])
+            hydrograph_file = hydrograph_file[0]
+            success = assign_hydrograph_to_dam(selected_dam, hydrograph_file)
+
+            # Remove csv related to dam if exists
+            for file in os.listdir(user_workspace.path):
+                if file.startswith("{}_".format(selected_dam)):
+                    os.remove(os.path.join(user_workspace.path, file))
+
+            # Write csv to user_workspace to test workspace quota functionality
+            full_filename = "{}_{}".format(selected_dam, hydrograph_file.name)
+            with open(os.path.join(user_workspace.path, full_filename), 'wb+') as destination:
+                for chunk in hydrograph_file.chunks():
+                    destination.write(chunk)
+                destination.close()
 
             # Provide feedback to user
             if success:

@@ -15,7 +15,7 @@ class Dam(Base):
     """
     __tablename__ = 'dams'
 
-    #Columns
+    # Columns
     id = Column(Integer, primary_key=True)
     latitude = Column(Float)
     longitude = Column(Float)
@@ -23,9 +23,10 @@ class Dam(Base):
     owner = Column(String)
     river = Column(String)
     date_built = Column(String)
+    user_id = Column(Integer)
 
     # Relationships
-    hydrograph = relationship('Hydrograph', back_populates='dam', uselist=False)
+    hydrograph = relationship('Hydrograph', cascade="all,delete", back_populates='dam', uselist=False)
 
 
 class Hydrograph(Base):
@@ -40,7 +41,7 @@ class Hydrograph(Base):
 
     # Relationships
     dam = relationship('Dam', back_populates='hydrograph')
-    points = relationship('HydrographPoint', back_populates='hydrograph')
+    points = relationship('HydrographPoint', cascade="all,delete", back_populates='hydrograph')
 
 
 class HydrographPoint(Base):
@@ -59,7 +60,7 @@ class HydrographPoint(Base):
     hydrograph = relationship('Hydrograph', back_populates='points')
 
 
-def add_new_dam(location, name, owner, river, date_built):
+def add_new_dam(location, name, owner, river, date_built, user_id):
     """
     Persist new dam.
     """
@@ -76,7 +77,8 @@ def add_new_dam(location, name, owner, river, date_built):
         name=name,
         owner=owner,
         river=river,
-        date_built=date_built
+        date_built=date_built,
+        user_id=user_id,
     )
 
     # Get connection/session to database
@@ -196,7 +198,8 @@ def init_primary_db(engine, first_time):
             name="Deer Creek",
             owner="Reclamation",
             river="Provo River",
-            date_built="April 12, 1993"
+            date_built="April 12, 1993",
+            user_id=-1,
         )
 
         dam2 = Dam(
@@ -205,7 +208,8 @@ def init_primary_db(engine, first_time):
             name="Jordanelle",
             owner="Reclamation",
             river="Provo River",
-            date_built="1941"
+            date_built="1941",
+            user_id=-1,
         )
 
         # Add the dams to the session, commit, and close
