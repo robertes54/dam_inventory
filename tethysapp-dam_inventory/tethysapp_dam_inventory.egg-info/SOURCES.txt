@@ -2,6 +2,7 @@ setup.py
 tethysapp/dam_inventory/__init__.py
 tethysapp/dam_inventory/app.py
 tethysapp/dam_inventory/controllers.py
+tethysapp/dam_inventory/dam_quota_handler.py
 tethysapp/dam_inventory/handoff.py
 tethysapp/dam_inventory/helpers.py
 tethysapp/dam_inventory/model.py

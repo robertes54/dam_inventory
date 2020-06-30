@@ -20,12 +20,9 @@
   <li class="title">Navigation</li>
   <li class="{% if request.path == home_url %}active{% endif %}"><a href="{{ home_url }}">Home</a></li>
   <li class="{% if request.path == list_dam_url %}active{% endif %}"><a href="{{ list_dam_url }}">Dams</a></li>
-  {% if can_add_dams %}
   <li class="{% if request.path == add_dam_url %}active{% endif %}"><a href="{{ add_dam_url }}">Add Dam</a></li>
   <li class="{% if request.path == assign_hydrograph_url %}active{% endif %}"><a href="{{ assign_hydrograph_url }}">Assign Hydrograph</a></li>
-  {% endif %}
 {% endblock %}
-
 
 {% block app_content %}
 {% endblock %}

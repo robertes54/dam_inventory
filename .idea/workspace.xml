@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="BRANCH:Quotas-Concepts" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </select>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="093b63bf-23e7-4d24-9839-bec2fdaf0230" name="Default Changelist" comment="" />
+    <list id="075a6501-4a08-439a-a068-8fba12fe780c" name="Revert &quot;advanced # 6 File Upload The stuff has been broken since App Permissions&quot;" comment="finished all steps" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="JavaScript File" />
+        <option value="HTML File" />
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="Advanced_Solution" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RESET_MODE" value="HARD" />
+  </component>
+  <component name="ProjectId" id="1dp5GDEkqCaPmp7uneK9ERsUciq" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="DefaultHtmlFileTemplate" value="HTML File" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/tethysapp-dam_inventory/tethysapp/dam_inventory/public/js" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/tethysapp-dam_inventory/tethysapp/dam_inventory/public/js" />
+    </key>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="093b63bf-23e7-4d24-9839-bec2fdaf0230" name="Default Changelist" comment="" />
+      <created>1593109095819</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1593109095819</updated>
+      <workItem from="1593121093638" duration="5338000" />
+      <workItem from="1593201853641" duration="309000" />
+      <workItem from="1593202190273" duration="8202000" />
+      <workItem from="1593445627730" duration="5323000" />
+      <workItem from="1593453369558" duration="8152000" />
+    </task>
+    <task id="LOCAL-00001" summary="part 1 of Advanced solution">
+      <created>1593123402034</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1593123402034</updated>
+    </task>
+    <task id="LOCAL-00002" summary="part 1 of Advanced solution">
+      <created>1593126769427</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1593126769427</updated>
+    </task>
+    <task id="LOCAL-00003" summary="part 1 of Advanced solution">
+      <created>1593127375612</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1593127375612</updated>
+    </task>
+    <task id="LOCAL-00004" summary="just checking">
+      <created>1593202490318</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1593202490318</updated>
+    </task>
+    <task id="LOCAL-00005" summary="just checking">
+      <created>1593202519825</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1593202519825</updated>
+    </task>
+    <task id="LOCAL-00006" summary="advanced # 1 part 9">
+      <created>1593204115955</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1593204115955</updated>
+    </task>
+    <task id="LOCAL-00007" summary="advanced # 2">
+      <created>1593204807493</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1593204807493</updated>
+    </task>
+    <task id="LOCAL-00008" summary="advanced # 3&#10;Use Custom Settings">
+      <created>1593205248411</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1593205248411</updated>
+    </task>
+    <task id="LOCAL-00009" summary="advanced # 4 part 5&#10;App Permissions">
+      <created>1593206246065</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1593206246065</updated>
+    </task>
+    <task id="LOCAL-00010" summary="advanced # 5&#10;App Permissions">
+      <created>1593206971487</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1593206971487</updated>
+    </task>
+    <task id="LOCAL-00011" summary="advanced # 6&#10;File Upload&#10;The stuff has been broken since App Permissions">
+      <created>1593208221779</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1593208221779</updated>
+    </task>
+    <task id="LOCAL-00012" summary="advanced # 7&#10;File Upload&#10;The Port in step 1 part 9 needed to be 5436. It works now.">
+      <created>1593212053699</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1593212053699</updated>
+    </task>
+    <task id="LOCAL-00013" summary="this is just some code">
+      <created>1593445690594</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1593445690594</updated>
+    </task>
+    <task id="LOCAL-00014" summary="fixing previous stuff">
+      <created>1593447255736</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1593447255736</updated>
+    </task>
+    <task id="LOCAL-00015" summary="committing changes to model.py">
+      <created>1593447374971</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1593447374971</updated>
+    </task>
+    <task id="LOCAL-00016" summary="this says revert so I am going to revert it just to get it out of my cue">
+      <created>1593447488323</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1593447488323</updated>
+    </task>
+    <task id="LOCAL-00017" summary="just doing it">
+      <created>1593447533868</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1593447533868</updated>
+    </task>
+    <task id="LOCAL-00018" summary="finished all steps">
+      <created>1593452010825</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1593452010825</updated>
+    </task>
+    <task id="LOCAL-00019" summary="First Commit. Some problems when syncing.">
+      <created>1593463650714</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1593463650714</updated>
+    </task>
+    <task id="LOCAL-00020" summary="still some problems.">
+      <created>1593464092566</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1593464092566</updated>
+    </task>
+    <task id="LOCAL-00021" summary="still some problems.">
+      <created>1593467043324</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1593467043324</updated>
+    </task>
+    <task id="LOCAL-00022" summary="still some problems.">
+      <created>1593468917832</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1593468917832</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="2" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="Quotas-Concepts" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="part 1 of Advanced solution" />
+    <MESSAGE value="just checking" />
+    <MESSAGE value="advanced # 1 part 9" />
+    <MESSAGE value="advanced # 2" />
+    <MESSAGE value="advanced # 3&#10;Use Custom Settings" />
+    <MESSAGE value="advanced # 4 part 5&#10;App Permissions" />
+    <MESSAGE value="advanced # 5&#10;App Permissions" />
+    <MESSAGE value="advanced # 6&#10;File Upload&#10;The stuff has been broken since App Permissions" />
+    <MESSAGE value="advanced # 7&#10;File Upload&#10;The Port in step 1 part 9 needed to be 5436. It works now." />
+    <MESSAGE value="this is just some code" />
+    <MESSAGE value="fixing previous stuff" />
+    <MESSAGE value="committing changes to model.py" />
+    <MESSAGE value="this says revert so I am going to revert it just to get it out of my cue" />
+    <MESSAGE value="just doing it" />
+    <MESSAGE value="finished all steps" />
+    <MESSAGE value="First Commit. Some problems when syncing." />
+    <MESSAGE value="still some problems." />
+    <option name="LAST_COMMIT_MESSAGE" value="still some problems." />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="433" y="303" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1593448120586">
+      <screen x="0" y="23" width="1680" height="956" />
+    </state>
+    <state x="433" y="303" key="#com.intellij.fileTypes.FileTypeChooser/0.23.1680.956/1680.23.1680.1027@0.23.1680.956" timestamp="1593448120586" />
+    <state x="190" y="67" key="CommitChangelistDialog2" timestamp="1593212470918">
+      <screen x="0" y="23" width="1680" height="956" />
+    </state>
+    <state x="190" y="67" key="CommitChangelistDialog2/0.23.1680.956/1680.23.1680.1027@0.23.1680.956" timestamp="1593212470918" />
+    <state x="44" y="97" key="MergeDialog" timestamp="1593468221940">
+      <screen x="0" y="23" width="1680" height="956" />
+    </state>
+    <state x="44" y="97" key="MergeDialog/0.23.1680.956/1680.23.1680.1027@0.23.1680.956" timestamp="1593468221940" />
+    <state x="352" y="262" key="MultipleFileMergeDialog" timestamp="1593212465390">
+      <screen x="0" y="23" width="1680" height="956" />
+    </state>
+    <state x="352" y="262" key="MultipleFileMergeDialog/0.23.1680.956/1680.23.1680.1027@0.23.1680.956" timestamp="1593212465390" />
+    <state x="311" y="234" key="Vcs.Push.Dialog.v2" timestamp="1593468927362">
+      <screen x="0" y="23" width="1680" height="956" />
+    </state>
+    <state x="311" y="234" key="Vcs.Push.Dialog.v2/0.23.1680.956/1680.23.1680.1027@0.23.1680.956" timestamp="1593468927362" />
+    <state x="384" y="210" key="git4idea.branch.GitSmartOperationDialog" timestamp="1593468197502">
+      <screen x="0" y="23" width="1680" height="956" />
+    </state>
+    <state x="384" y="210" key="git4idea.branch.GitSmartOperationDialog/0.23.1680.956/1680.23.1680.1027@0.23.1680.956" timestamp="1593468197502" />
+    <state x="404" y="289" key="git4idea.merge.GitPullDialog" timestamp="1593463128434">
+      <screen x="0" y="23" width="1680" height="956" />
+    </state>
+    <state x="404" y="288" key="git4idea.merge.GitPullDialog/0.23.1680.954/1680.23.1680.1027@0.23.1680.954" timestamp="1593121134767" />
+    <state x="404" y="289" key="git4idea.merge.GitPullDialog/0.23.1680.956/1680.23.1680.1027@0.23.1680.956" timestamp="1593463128434" />
+  </component>
+</project>
