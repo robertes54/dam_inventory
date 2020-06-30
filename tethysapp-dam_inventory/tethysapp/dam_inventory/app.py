@@ -61,6 +61,12 @@ class DamInventory(TethysAppBase):
                 url='dam-inventory/delete_dam/{dam_id}',
                 controller='dam_inventory.controllers.delete_dam'
             ),
+            UrlMap(
+                name='dam_notification',
+                url='dam-inventory/dams/notifications',
+                controller='dam_inventory.consumers.NotificationsConsumer',
+                protocol='websocket'
+            ),
         )
 
         return url_maps

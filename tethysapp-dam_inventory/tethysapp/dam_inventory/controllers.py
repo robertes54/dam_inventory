@@ -5,13 +5,15 @@ from django.shortcuts import render, reverse, redirect
 from tethys_sdk.permissions import login_required
 from tethys_sdk.gizmos import (Button, MapView, TextInput, DatePicker,
                                SelectInput, DataTableView, MVDraw, MVView,
-                               MVLayer)
+                               MVLayer, MessageBox)
 from tethys_sdk.permissions import permission_required, has_permission
 from tethys_sdk.workspaces import user_workspace
 from tethys_sdk.quotas import enforce_quota
 from .model import Dam, add_new_dam, get_all_dams, assign_hydrograph_to_dam, get_hydrograph
 from .app import DamInventory as app
 from .helpers import create_hydrograph
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 
 @login_required()
@@ -110,8 +112,17 @@ def home(request):
         href=reverse('dam_inventory:add_dam')
     )
 
+    message_box = MessageBox(
+        name='notification',
+        title='',
+        dismiss_button='Nevermind',
+        affirmative_button='Refresh',
+        affirmative_attributes='onClick=window.location.href=window.location.href;'
+    )
+
     context = {
         'dam_inventory_map': dam_inventory_map,
+        'message_box': message_box,
         'add_dam_button': add_dam_button,
         'can_add_dams': has_permission(request, 'add_dams')
     }
@@ -192,6 +203,17 @@ def add_dam(request):
                 )
             else:
                 messages.warning(request, 'Unable to add dam "{0}", because the inventory is full.'.format(name))
+
+            new_num_dams = session.query(Dam).count()
+
+            if new_num_dams > num_dams:
+                channel_layer = get_channel_layer()
+                async_to_sync(channel_layer.group_send)(
+                    "notifications", {
+                        "type": "dam_notifications",
+                        "message": "New Dam"
+                    }
+                )
 
             return redirect(reverse('dam_inventory:home'))
 
